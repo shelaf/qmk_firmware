@@ -44,7 +44,7 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#include "samd51j18a.h"
+#include "sam.h"
 #include "conf_usb.h"
 #include "usb_protocol.h"
 #include "usb_protocol_cdc.h"
@@ -1136,6 +1136,9 @@ int CDC_printf(const char *_Format, ...) {
 // global "inbuf" if desired
 inbuf_t inbuf;
 
+char sbuf[CDC_INBUF_SIZE] = { 0 };
+static int scount = 0;
+
 uint32_t CDC_input_buf(inbuf_t inbuf, uint32_t inbuf_size) {
     int RXChar;
     int entered = 0;
@@ -1148,31 +1151,46 @@ uint32_t CDC_input_buf(inbuf_t inbuf, uint32_t inbuf_size) {
         switch (RXChar) {
             case '\t':  // tab - repeat last
                 inbuf.count                = inbuf.lastcount;
+		scount = inbuf.lastcount;
                 inbuf.buf[inbuf.count + 1] = 0;
-                CDC_print(inbuf.buf);
+		sbuf[scount + 1] = 0;
+                // CDC_print(inbuf.buf);
+                CDC_print(sbuf);
                 break;
             case '\r':  // enter
-                inbuf.buf[inbuf.count] = 0;
-                inbuf.lastcount        = inbuf.count;
+                inbuf.buf[scount] = 0;
+                inbuf.lastcount        = scount;
+                // inbuf.buf[inbuf.count] = 0;
+                // inbuf.lastcount        = inbuf.count;
                 inbuf.count            = 0;
                 entered                = 1;
+		scount = 0;
+		CDC_printf("enter(%d)\r\n\0", inbuf.lastcount);
+		CDC_printf("\"%s\"\r\n\0", inbuf.buf);
                 break;
             case '\b':  // backspace
                 if (inbuf.count > 0) {
                     inbuf.count -= 1;
+		    scount -= 1;
                     CDC_print("\b \b\0");
-                } else
+                } else {
                     CDC_print("\a\0");
+		}
                 break;
             default:
                 if ((RXChar >= 32) && (RXChar <= 126)) {
                     if (inbuf.count < inbuf_size - 1) {
                         inbuf.buf[inbuf.count]     = RXChar;
+			sbuf[scount] = RXChar;
                         inbuf.buf[inbuf.count + 1] = 0;
+			sbuf[scount + 1] = 0;
                         CDC_print(&inbuf.buf[inbuf.count]);
                         inbuf.count += 1;
-                    } else
+			scount += 1;
+                        CDC_printf("[%d,%d]", inbuf.count,scount);
+                    } else {
                         CDC_print("\a\0");
+		    }
                 }
                 break;
         }

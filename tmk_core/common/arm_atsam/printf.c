@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef CONSOLE_ENABLE
 
-#    include "samd51j18a.h"
+#    include "sam.h"
 #    include "arm_atsam_protocol.h"
 #    include <string.h>
 #    include <stdarg.h>

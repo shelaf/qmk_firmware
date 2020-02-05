@@ -23,6 +23,8 @@
 #if defined(PROTOCOL_CHIBIOS)
 #    include <hal.h>
 #    include "chibios_config.h"
+#elif defined(PROTOCOL_ARM_ATSAM)
+#    include "arm_atsam_protocol.h"
 #endif
 
 #include "wait.h"
