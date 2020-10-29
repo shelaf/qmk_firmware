@@ -177,6 +177,14 @@ else
       endif
     else ifeq ($(PLATFORM),ARM_ATSAM)
       SRC += $(PLATFORM_COMMON_DIR)/eeprom.c
+    else ifeq ($(PLATFORM),ATSAM)
+      ifeq ($(MCU_SERIES), SAMD51A)
+        SRC += $(PLATFORM_COMMON_DIR)/eeprom_sam.c
+        SRC += $(PLATFORM_COMMON_DIR)/flash_sam.c
+      else ifeq ($(MCU_SERIES), SAMD21A)
+        SRC += $(PLATFORM_COMMON_DIR)/eeprom_sam.c
+        SRC += $(PLATFORM_COMMON_DIR)/flash_sam.c
+      endif
     else ifeq ($(PLATFORM),TEST)
       SRC += $(PLATFORM_COMMON_DIR)/eeprom.c
     endif

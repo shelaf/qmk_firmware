@@ -101,6 +101,10 @@ lufa_warning: $(FIRMWARE_FORMAT)
 	$(info It is extremely prone to bricking, and is only included to support existing boards.)
 	$(info @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@)
 endif
+ifeq ($(strip $(BOOTLOADER)), bossa)
+    OPT_DEFS += -DBOOTLOADER_BOSSA
+endif
+
 ifdef BOOTLOADER_SIZE
     OPT_DEFS += -DBOOTLOADER_SIZE=$(strip $(BOOTLOADER_SIZE))
 endif

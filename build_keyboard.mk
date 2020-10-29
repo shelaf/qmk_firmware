@@ -151,6 +151,13 @@ endif
 
 include quantum/mcu_selection.mk
 
+ifdef MCU_FAMILY
+    ifndef ATSAM
+        OPT_DEFS += -DQMK_STM32
+        KEYBOARD_PATHS += $(STM32_PATH)
+    endif
+endif
+
 # Find all the C source files to be compiled in subfolders.
 KEYBOARD_SRC :=
 
@@ -229,9 +236,15 @@ endif
 # We can assume a ChibiOS target When MCU_FAMILY is defined since it's
 # not used for LUFA
 ifdef MCU_FAMILY
-    PLATFORM=CHIBIOS
-    PLATFORM_KEY=chibios
-    FIRMWARE_FORMAT?=bin
+    ifdef ATSAM
+        PLATFORM=ATSAM
+        PLATFORM_KEY=atsam
+        FIRMWARE_FORMAT?=bin
+    else
+        PLATFORM=CHIBIOS
+        PLATFORM_KEY=chibios
+        FIRMWARE_FORMAT?=bin
+    endif
 else ifdef ARM_ATSAM
     PLATFORM=ARM_ATSAM
     PLATFORM_KEY=arm_atsam

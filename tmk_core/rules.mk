@@ -500,4 +500,4 @@ clean clean_list debug gdb-config show_path \
 program teensy dfu dfu-ee dfu-start \
 flash dfu-split-left dfu-split-right \
 avrdude-split-left avrdude-split-right \
-avrdude-loop usbasp
+avrdude-loop usbasp bossa
