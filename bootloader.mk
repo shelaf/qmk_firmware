@@ -95,6 +95,10 @@ ifeq ($(strip $(BOOTLOADER)), lufa-ms)
     BOOTLOADER_SIZE = 6144
     FIRMWARE_FORMAT = bin
 endif
+ifeq ($(strip $(BOOTLOADER)), bossa)
+    OPT_DEFS += -DBOOTLOADER_BOSSA
+endif
+
 ifdef BOOTLOADER_SIZE
     OPT_DEFS += -DBOOTLOADER_SIZE=$(strip $(BOOTLOADER_SIZE))
 endif

@@ -30,6 +30,8 @@ else ifeq ($(PLATFORM),CHIBIOS)
   VPATH += $(PRINTF_PATH)
 else ifeq ($(PLATFORM),ARM_ATSAM)
   TMK_COMMON_SRC += $(PLATFORM_COMMON_DIR)/printf.c
+else ifeq ($(PLATFORM),ATSAM)
+  TMK_COMMON_SRC += $(PLATFORM_COMMON_DIR)/printf.c
 endif
 
 # Option modules
