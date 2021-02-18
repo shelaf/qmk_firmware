@@ -315,7 +315,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     register_code(r_inner);
                     r_long_pressed = true;
                 }
-                // set_single_persistent_default_layer(_PSEUDO);
+                default_layer_set(1UL << _PSEUDO);
             }
             return false;
         case TENKEY:
@@ -331,55 +331,41 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case L_INNER:
             if (record->event.pressed) {
                 l_pressed = true;
-                l_time    = record->event.time;
+                l_time    = timer_read();
             } else {
-                if (l_pressed) {
-                    if (l_long_pressed) {
-                        unregister_code(l_inner);
-                        l_long_pressed = false;
+                if (l_long_pressed) {
+                    unregister_code(l_inner);
+                    l_long_pressed = false;
+                } else {
+                    if (mac_mode) {
+                        register_code(KC_LNG2);
+                        unregister_code(KC_LNG2);
                     } else {
-                        if (TIMER_DIFF_16(record->event.time, l_time) < TAPPING_TERM) {
-                            if (mac_mode) {
-                                register_code(KC_LNG2);
-                                unregister_code(KC_LNG2);
-                            } else {
-                                register_code(KC_INT5);
-                                unregister_code(KC_INT5);
-                            }
-                        } else {
-                            register_code(l_inner);
-                            unregister_code(l_inner);
-                        }
+                        register_code(KC_INT5);
+                        unregister_code(KC_INT5);
                     }
-                    l_pressed = false;
                 }
+                l_pressed = false;
             }
             return false;
         case R_INNER:
             if (record->event.pressed) {
                 r_pressed = true;
-                r_time    = record->event.time;
+                r_time    = timer_read();
             } else {
-                if (r_pressed) {
-                    if (r_long_pressed) {
-                        unregister_code(r_inner);
-                        r_long_pressed = false;
+                if (r_long_pressed) {
+                    unregister_code(r_inner);
+                    r_long_pressed = false;
+                } else {
+                    if (mac_mode) {
+                        register_code(KC_LNG1);
+                        unregister_code(KC_LNG1);
                     } else {
-                        if (TIMER_DIFF_16(record->event.time, r_time) < TAPPING_TERM) {
-                            if (mac_mode) {
-                                register_code(KC_LNG1);
-                                unregister_code(KC_LNG1);
-                            } else {
-                                register_code(KC_INT2);
-                                unregister_code(KC_INT2);
-                            }
-                        } else {
-                            register_code(r_inner);
-                            unregister_code(r_inner);
-                        }
+                        register_code(KC_INT2);
+                        unregister_code(KC_INT2);
                     }
-                    r_pressed = false;
                 }
+                r_pressed = false;
             }
             return false;
         case L_OUTER:
@@ -431,6 +417,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
     }
     return true;
+}
+
+void matrix_scan_user(void) {
+    if (l_pressed && !l_long_pressed) {
+        if (timer_elapsed(l_time) >= TAPPING_TERM) {
+            register_code(l_inner);
+            l_long_pressed = true;
+        }
+    }
+    if (r_pressed && !r_long_pressed) {
+        if (timer_elapsed(r_time) >= TAPPING_TERM) {
+            register_code(r_inner);
+            r_long_pressed = true;
+        }
+    }
 }
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
